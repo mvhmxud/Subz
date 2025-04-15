@@ -3,17 +3,30 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response } from "express";
 import { OAuth2Client } from "google-auth-library";
 import User from "../models/User";
+import { validationResult } from "express-validator";
 import {
   generateAccessToken,
   generateRefreshToken,
 } from "../utils/generateTokens";
 import { generateUsername } from "../utils/generateUsername";
-
+// TODO:Make CONSTS for cookies Max Age
+const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000; // 15 minutes
+const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const generateAuthTokens = async (user: any) => {
-  const accessToken = generateAccessToken(user._id);
-  const refreshToken = generateRefreshToken(user._id);
+  const accessToken = generateAccessToken(
+    user._id,
+    user.username,
+    user.name,
+    user.image
+  );
+  const refreshToken = generateRefreshToken(
+    user._id,
+    user.username,
+    user.name,
+    user.image
+  );
 
   // Store only the current refresh token (invalidate previous ones)
   user.refreshToken = refreshToken;
@@ -25,7 +38,14 @@ const generateAuthTokens = async (user: any) => {
 // Signup with email/password
 export const signup = async (req: Request, res: Response) => {
   console.log("singing up ...");
-  const { email, password, name, username } = req.body;
+  const { email, password, username } = req.body;
+  console.log({ email, password, username });
+
+  const result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    return res.status(400).json({ errors: result.array() });
+  }
 
   try {
     // Check if email exists
@@ -45,9 +65,7 @@ export const signup = async (req: Request, res: Response) => {
     const user = await User.create({
       email,
       password: hashed,
-      name,
       username,
-      emailVerified: false, // Set email as unverified initially
     });
 
     // Generate auth tokens
@@ -58,17 +76,15 @@ export const signup = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
-
-    // TODO: In a real implementation, send verification email here
 
     res.status(201).json({
       user: {
@@ -76,7 +92,6 @@ export const signup = async (req: Request, res: Response) => {
         email: user.email,
         name: user.name,
         username: user.username,
-        emailVerified: user.emailVerified,
         image: user.image,
       },
     });
@@ -123,14 +138,14 @@ export const login = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
     res.status(200).json({
@@ -139,7 +154,6 @@ export const login = async (req: Request, res: Response) => {
         email: user.email,
         name: user.name,
         username: user.username,
-        emailVerified: user.emailVerified,
         image: user.image,
       },
     });
@@ -169,47 +183,25 @@ export const googleAuth = async (req: Request, res: Response) => {
       name,
       picture,
       sub: googleId,
-      email_verified,
     } = payload as {
       email: string;
       name: string;
       picture: string;
       sub: string;
-      email_verified: boolean;
     };
 
-    // Check if this Google account is already registered
+    // Check if user exists with this Google ID
     let user = await User.findOne({ googleId });
 
-    // If no user with this Google ID, check if email exists
     if (!user) {
-      const existingUser = await User.findOne({ email });
-
-      if (existingUser) {
-        // If the user exists with password auth, link the Google account
-        if (existingUser.password) {
-          existingUser.googleId = googleId;
-          existingUser.image = existingUser.image || picture;
-          existingUser.emailVerified = true; // Google emails are verified
-          user = existingUser;
-          await user.save();
-        } else {
-          // Another OAuth account with same email - security issue
-          return res.status(400).json({
-            message: "An account with this email already exists",
-          });
-        }
-      } else {
-        // Create new user with Google account
-        user = await User.create({
-          email,
-          name,
-          image: picture,
-          googleId,
-          username: await generateUniqueUsername(name),
-          emailVerified: Boolean(email_verified),
-        });
-      }
+      // Create new user with Google account
+      user = await User.create({
+        email,
+        name,
+        image: picture,
+        googleId,
+        username: await generateUniqueUsername(name),
+      });
     }
 
     // Generate auth tokens
@@ -220,14 +212,14 @@ export const googleAuth = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
     res.status(200).json({
@@ -236,7 +228,6 @@ export const googleAuth = async (req: Request, res: Response) => {
         email: user.email,
         name: user.name,
         username: user.username,
-        emailVerified: user.emailVerified,
         image: user.image,
       },
     });
@@ -313,14 +304,14 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
     res.status(200).json({
@@ -329,18 +320,21 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
         email: user.email,
         name: user.name,
         username: user.username,
-        emailVerified: user.emailVerified,
         image: user.image,
+        refreshToken: newRefreshToken,
+        token: accessToken,
       },
     });
   } catch (err) {
-    console.error('Refresh token error:', err);
+    console.error("Refresh token error:", err);
     if (err instanceof jwt.TokenExpiredError) {
       return res.status(401).json({ message: "Refresh token expired" });
     }
     if (err instanceof jwt.JsonWebTokenError) {
       return res.status(401).json({ message: "Invalid refresh token" });
     }
-    res.status(500).json({ message: "Internal server error during token refresh" });
+    res
+      .status(500)
+      .json({ message: "Internal server error during token refresh" });
   }
 };
