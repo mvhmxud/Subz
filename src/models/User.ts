@@ -8,7 +8,8 @@ const UserSchema = new mongoose.Schema({
   image: { type: String },
   googleId: { type: String, unique: true, sparse: true },
   createdAt: { type: Date, default: Date.now },
-  refreshToken: { type: String, default: null }
+  refreshToken: { type: String, default: null },
+  onboarding: { type: Boolean, default: true },
 });
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);
