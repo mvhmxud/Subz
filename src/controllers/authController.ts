@@ -9,7 +9,6 @@ import {
   generateRefreshToken,
 } from "../utils/generateTokens";
 import { generateUsername } from "../utils/generateUsername";
-// TODO:Make CONSTS for cookies Max Age
 const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000; // 15 minutes
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -19,14 +18,11 @@ const generateAuthTokens = async (user: any) => {
     user._id,
     user.username,
     user.name,
-    user.image
+    user.image,
+    user.onboarding,
+    user.bio
   );
-  const refreshToken = generateRefreshToken(
-    user._id,
-    user.username,
-    user.name,
-    user.image
-  );
+  const refreshToken = generateRefreshToken(user._id, user.username);
 
   // Store only the current refresh token (invalidate previous ones)
   user.refreshToken = refreshToken;
@@ -39,7 +35,6 @@ const generateAuthTokens = async (user: any) => {
 export const signup = async (req: Request, res: Response) => {
   console.log("singing up ...");
   const { email, password, username } = req.body;
-  console.log({ email, password, username });
 
   const result = validationResult(req);
 
@@ -165,12 +160,11 @@ export const login = async (req: Request, res: Response) => {
 // Google OAuth Login
 export const googleAuth = async (req: Request, res: Response) => {
   const { idToken } = req.body;
-
   try {
     // Verify the Google token
     const ticket = await client.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      idToken : idToken as string,
+      audience: process.env.GOOGLE_ID as string,
     });
 
     const payload = ticket.getPayload();

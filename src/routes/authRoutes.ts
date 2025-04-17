@@ -15,6 +15,6 @@ router.post('/login' , [
   body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
 ], login)
 router.post('/google', googleAuth)
-router.post("/refresh-token" , refreshTokenHandler);
+router.post("/refresh-token" , refreshTokenHandler); // Todo: add refresh token to cookies instead of sending it in the response
 
 export default router
