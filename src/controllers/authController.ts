@@ -33,7 +33,6 @@ const generateAuthTokens = async (user: any) => {
 
 // Signup with email/password
 export const signup = async (req: Request, res: Response) => {
-  console.log("singing up ...");
   const { email, password, username } = req.body;
 
   const result = validationResult(req);
@@ -150,6 +149,8 @@ export const login = async (req: Request, res: Response) => {
         name: user.name,
         username: user.username,
         image: user.image,
+        friendrequests: user.friendRequests,
+        friends: user.friends,
       },
     });
   } catch (err: any) {
