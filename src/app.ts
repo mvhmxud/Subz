@@ -9,7 +9,7 @@ import http from "http";
 import { Server } from "socket.io";
 import { defaultNamespace } from "./sockets/defaultNamespace";
 const app = express();
-const server = http.createServer(app);
+export const server = http.createServer(app);
 
 //socket-io server
 const io = new Server(server, {
