@@ -8,7 +8,7 @@ const ChatSchema = new mongoose.Schema(
     parentChatId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Chat",
-      default: null,
+      default: null, // null for non parent
     },
     creator: {
       type: mongoose.Schema.Types.ObjectId,
@@ -18,13 +18,13 @@ const ChatSchema = new mongoose.Schema(
     members: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "User", // for now it will be only two users
       },
     ],
     messages: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Message",
+        ref: "Message", //
       },
     ],
     createdAt: {
@@ -32,21 +32,16 @@ const ChatSchema = new mongoose.Schema(
       default: Date.now,
     },
     updatedAt: Date,
-    isPrivate: {
-      type: Boolean,
-      default: false,
-    },
     subChats: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Chat",
       },
     ],
-    // Explicit field to determine if it's a direct chat or group chat
     chatType: {
       type: String,
       enum: ["direct", "group"],
-      required: true,
+      required: true, // Explicit field to determine if it's a direct chat or group chat
     },
   },
   { timestamps: true }
@@ -55,6 +50,5 @@ const ChatSchema = new mongoose.Schema(
 ChatSchema.index({ chatType: 1 });
 ChatSchema.index({ members: 1 });
 ChatSchema.index({ creator: 1 });
-
 
 export default mongoose.models.Chat || mongoose.model("Chat", ChatSchema);

@@ -25,7 +25,6 @@ export const AuthMiddleware = async (
 ) => {
   try {
     const token = req.cookies?.token;
-
     if (!token) {
       return res.status(401).json({ message: "Not authorized, no token" });
     }
@@ -36,7 +35,7 @@ export const AuthMiddleware = async (
     }
 
     const decoded = jwt.verify(token, secret) as JWTPayload;
-    
+    console.log(decoded);
     if (!decoded.userId) {
       return res.status(401).json({ message: "Invalid token format" });
     }
@@ -50,7 +49,10 @@ export const AuthMiddleware = async (
     req.user = user;
     next();
   } catch (error) {
-    console.error("Auth middleware error:", error instanceof Error ? error.message : "Unknown error");
+    console.error(
+      "Auth middleware error:",
+      error instanceof Error ? error.message : "Unknown error"
+    );
     return res.status(401).json({ message: "Not authorized, token failed" });
   }
 };

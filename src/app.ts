@@ -5,6 +5,7 @@ import authRoutes from "./routes/authRoutes";
 import { AuthMiddleware } from "./middlewares/auth";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes";
+import chatRoutes from "./routes/chatRoutes";
 import http from "http";
 import { Server } from "socket.io";
 import { defaultNamespace } from "./sockets/defaultNamespace";
@@ -35,6 +36,7 @@ app.use(
 
 app.use("/api/users", AuthMiddleware, userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/chats", AuthMiddleware, chatRoutes);
 app.use(errorHandler);
 
 export default app;

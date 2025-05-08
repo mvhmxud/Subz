@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
+  username: { type: String, required: true, unique: true }, //add  no whitespaces check  
   email: { type: String, required: true, unique: true },
   password: { type: String, default: null }, // null for Google users
   name: { type: String },

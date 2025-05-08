@@ -16,8 +16,7 @@ import { uploadMiddleware } from "../config/cloudinary";
 const router = express.Router();
 
 // USER
-router.get("/user", getUser);
-router.get("/search", searchUsers) ;
+router.get("/search", searchUsers);
 router.put(
   "/user",
   body("password")
@@ -46,4 +45,5 @@ router.put("/user/accept-friend-request", acceptFriendRequest);
 router.put("/user/reject-friend-request", rejectFriendRequest);
 router.delete("/user/friend", deleteFriend);
 
+router.get("/user/:userId", getUser);
 export default router;
