@@ -5,24 +5,27 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import { generateAccessToken } from "../utils/generateTokens";
+import Chat from "../models/Chat";
 
 // GET USER : GET /users/user
 export const getUser = async (req: Request, res: Response) => {
+  const { userId } = req.params;
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
+
   try {
-    const user = await User.findById(req.user);
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    console.log(user);
     res.status(200).json({
       username: user.username,
       name: user.name,
       image: user.image,
-      onboarding: user.onboarding,
       bio: user.bio,
+      isActive: user.isActive,
     });
   } catch (error) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -302,6 +305,19 @@ export const acceptFriendRequest = async (req: Request, res: Response) => {
     await userDoc.save();
     await friend.save();
 
+    const directChat = await Chat.findOne({
+      members: { $all: [userDoc._id, friend._id] },
+      chatType: "direct",
+    });
+    // direct chat allready existed
+    if (!directChat) {
+      await Chat.create({
+        members: [userDoc._id, friend._id],
+        chatType: "direct",
+      });
+      console.log(` chat created between ${userDoc._id} , ${friend._id}`);
+    }
+
     return res.status(200).json({
       message: "Friend request accepted",
       friend: friend,
@@ -349,6 +365,7 @@ export const rejectFriendRequest = async (req: Request, res: Response) => {
 // GET RELATIONS : GET /users/user/relations : PARAMS : userId
 export const getRelations = async (req: Request, res: Response) => {
   const user = req.user;
+  console.log("heereee", user);
   if (!user?._id) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -414,3 +431,45 @@ export const deleteFriend = async (req: Request, res: Response) => {
 
   return res.status(200).json({ message: "Friend deleted" });
 };
+
+export async function activateUser(userId) {
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { isActive: true } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      console.log("User not found");
+      return null;
+    }
+
+    console.log("User is Now Active", updatedUser.name);
+    return updatedUser;
+  } catch (error) {
+    console.error("Error activating user:", error);
+    throw error;
+  }
+}
+
+export async function inActivateUser(userId) {
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { isActive: false } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      console.log("User not found");
+      return null;
+    }
+
+    console.log("Updated user:", updatedUser);
+    return updatedUser;
+  } catch (error) {
+    console.error("Error activating user:", error);
+    throw error;
+  }
+}
