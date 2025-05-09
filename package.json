@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "postinstall": "npm run build",
     "start": "node dist/server.js",
     "dev": "nodemon src/server.ts",
     "lint": "eslint 'src/**/*.ts'"
