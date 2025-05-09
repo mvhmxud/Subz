@@ -68,15 +68,15 @@ export const signup = async (req: Request, res: Response) => {
     // Set cookies
     res.cookie("token", accessToken, {
       httpOnly: true,
+      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
       maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
+      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
       maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
@@ -130,15 +130,15 @@ export const login = async (req: Request, res: Response) => {
     // Set cookies
     res.cookie("token", accessToken, {
       httpOnly: true,
+      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
       maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
+      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
       maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
@@ -205,15 +205,15 @@ export const googleAuth = async (req: Request, res: Response) => {
     // Set cookies
     res.cookie("token", accessToken, {
       httpOnly: true,
+      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
       maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
+      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
       maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
@@ -297,15 +297,15 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
     // Set new cookies
     res.cookie("token", accessToken, {
       httpOnly: true,
+      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
       maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
+      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
       maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
