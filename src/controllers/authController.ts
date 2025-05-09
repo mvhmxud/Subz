@@ -70,6 +70,7 @@ export const signup = async (req: Request, res: Response) => {
       httpOnly: true,
       sameSite: "none",
       secure: process.env.NODE_ENV === "production",
+       domain: '.up.railway.app',
       maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
@@ -77,6 +78,7 @@ export const signup = async (req: Request, res: Response) => {
       httpOnly: true,
       sameSite: "none",
       secure: process.env.NODE_ENV === "production",
+       domain: '.up.railway.app',
       maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
@@ -132,6 +134,7 @@ export const login = async (req: Request, res: Response) => {
       httpOnly: true,
       sameSite: "none",
       secure: process.env.NODE_ENV === "production",
+       domain: '.up.railway.app',
       maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
@@ -139,6 +142,7 @@ export const login = async (req: Request, res: Response) => {
       httpOnly: true,
       sameSite: "none",
       secure: process.env.NODE_ENV === "production",
+       domain: '.up.railway.app',
       maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
@@ -207,6 +211,7 @@ export const googleAuth = async (req: Request, res: Response) => {
       httpOnly: true,
       sameSite: "none",
       secure: process.env.NODE_ENV === "production",
+       domain: '.up.railway.app',
       maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
@@ -214,6 +219,7 @@ export const googleAuth = async (req: Request, res: Response) => {
       httpOnly: true,
       sameSite: "none",
       secure: process.env.NODE_ENV === "production",
+       domain: '.up.railway.app',
       maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
@@ -299,6 +305,7 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
       httpOnly: true,
       sameSite: "none",
       secure: process.env.NODE_ENV === "production",
+       domain: '.up.railway.app',
       maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
@@ -306,6 +313,7 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
       httpOnly: true,
       sameSite: "none",
       secure: process.env.NODE_ENV === "production",
+       domain: '.up.railway.app',
       maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 

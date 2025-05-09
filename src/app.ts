@@ -45,6 +45,10 @@ app.use(function (req, res, next) {
   next();
 });
 
+app.get("/check", (req, res) => {
+  res.json({ cookies: req.cookies });
+}); 
+
 app.use("/api/users", AuthMiddleware, userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/chats", AuthMiddleware, chatRoutes);
