@@ -68,17 +68,15 @@ export const signup = async (req: Request, res: Response) => {
     // Set cookies
     res.cookie("token", accessToken, {
       httpOnly: true,
-      sameSite: "none",
+      sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
-       domain: '.up.railway.app',
       maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      sameSite: "none",
+      sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
-       domain: '.up.railway.app',
       maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
@@ -132,17 +130,15 @@ export const login = async (req: Request, res: Response) => {
     // Set cookies
     res.cookie("token", accessToken, {
       httpOnly: true,
-      sameSite: "none",
+      sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
-       domain: '.up.railway.app',
       maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      sameSite: "none",
+      sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
-       domain: '.up.railway.app',
       maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
@@ -209,17 +205,15 @@ export const googleAuth = async (req: Request, res: Response) => {
     // Set cookies
     res.cookie("token", accessToken, {
       httpOnly: true,
-      sameSite: "none",
+      sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
-       domain: '.up.railway.app',
       maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      sameSite: "none",
+      sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
-       domain: '.up.railway.app',
       maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
@@ -303,17 +297,15 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
     // Set new cookies
     res.cookie("token", accessToken, {
       httpOnly: true,
-      sameSite: "none",
+      sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
-       domain: '.up.railway.app',
       maxAge: ACCESS_TOKEN_MAX_AGE, // 15 minutes
     });
 
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
-      sameSite: "none",
+      sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
-       domain: '.up.railway.app',
       maxAge: REFRESH_TOKEN_MAX_AGE, // 7 days
     });
 
