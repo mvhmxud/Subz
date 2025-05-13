@@ -128,7 +128,7 @@ export const uploadImage = async (req: Request, res: Response) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: "strict",
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
     res.cookie("token", updatedToken);
