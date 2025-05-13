@@ -90,6 +90,7 @@ export const updateUser = async (req: Request, res: Response) => {
     res.cookie("token", updatedToken, {
       httpOnly: true,
       sameSite : "none",
+      domain : process.env.DOMAIN,
       secure: process.env.NODE_ENV === "production",
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
